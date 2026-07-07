@@ -227,9 +227,12 @@ if check_password():
             "5v5 (2)": "5v5", "Serve & Pass": "Serve and Pass"
         }
         all_metrics = ['Total Jumps', 'Moderate Jumps', 'High Jumps', 'Jump Load', 'Player Load', 'Estimated Distance (y)', 'Explosive Efforts', 'High Intensity Movement']
+        
+        cmj_col = 'Jump Height (Imp-Mom) [cm]'
+        rsi_col = 'RSI-modified [m/s]'
+
         master_athlete_list = sorted(list(set(df_master['Name'].unique()) | set(cmj_master['Name'].unique()) | set(ash_master['Name'].unique()) | set(er_master['Name'].unique())))
         session_list = df_master[df_master['Session_Name'].notna()].sort_values('Date', ascending=False)['Session_Name'].unique().tolist()
-
         st.markdown('<div class="main-logo-container" style="text-align: center; margin-top: 10px; margin-bottom: 15px;"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Tennessee_Lady_Volunteers_logo.svg/1280px-Tennessee_Lady_Volunteers_logo.svg.png" width="120"><div style="color: #FF8200; font-size: 2rem; font-weight: 900; margin-top: 10px;">LADY VOLS VOLLEYBALL PERFORMANCE</div></div>', unsafe_allow_html=True)
 
         # --- MANDATORY ISOLATION ARCHITECTURE: NATIVE STATE LINKING ---
