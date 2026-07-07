@@ -30,15 +30,7 @@ st.markdown("""
     }
     .stApp { background-color: #FFFFFF; color: #1D1D1F; }
     hr { display: none !important; }
-    .block-container { 
-    padding-top: 5rem !important; 
-    padding-bottom: 3rem !important; 
-    }
-
-    .stPlotlyChart {
-    margin-top: 20px !important;
-    margin-bottom: 20px !important;
-    }
+    .block-container { padding-top: 2rem !important; }
     .viewerBadge_link__1S137, .main_heading_anchor__m6v0K, a.header-anchor { display: none !important; }
     header a { display: none !important; }
     .scout-table { width: 100%; border-collapse: collapse; text-align: center; table-layout: auto; }
@@ -203,14 +195,6 @@ if check_password():
     if "is_printing" not in st.session_state:
         st.session_state.is_printing = False
 
-    def get_flipped_gradient(score):
-        try:
-            score = float(score)
-            if pd.isna(score): return "#808080" 
-        except (ValueError, TypeError):
-            return "#808080" 
-        return "#2D5A27" if score <= 40 else "#D4A017" if score <= 70 else "#A52A2A"
-
     LOCKED_CONFIG = {'staticPlot': False, 'displayModeBar': False}
 
     try:
@@ -235,12 +219,12 @@ if check_password():
             "5v5 (2)": "5v5", "Serve & Pass": "Serve and Pass"
         }
         all_metrics = ['Total Jumps', 'Moderate Jumps', 'High Jumps', 'Jump Load', 'Player Load', 'Estimated Distance (y)', 'Explosive Efforts', 'High Intensity Movement']
-        
         cmj_col = 'Jump Height (Imp-Mom) [cm]'
         rsi_col = 'RSI-modified [m/s]'
-
+        
         master_athlete_list = sorted(list(set(df_master['Name'].unique()) | set(cmj_master['Name'].unique()) | set(ash_master['Name'].unique()) | set(er_master['Name'].unique())))
         session_list = df_master[df_master['Session_Name'].notna()].sort_values('Date', ascending=False)['Session_Name'].unique().tolist()
+
         st.markdown('<div class="main-logo-container" style="text-align: center; margin-top: 10px; margin-bottom: 15px;"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Tennessee_Lady_Volunteers_logo.svg/1280px-Tennessee_Lady_Volunteers_logo.svg.png" width="120"><div style="color: #FF8200; font-size: 2rem; font-weight: 900; margin-top: 10px;">LADY VOLS VOLLEYBALL PERFORMANCE</div></div>', unsafe_allow_html=True)
 
         # --- MANDATORY ISOLATION ARCHITECTURE: NATIVE STATE LINKING ---
@@ -249,15 +233,13 @@ if check_password():
         if "active_tab_state" not in st.session_state:
             st.session_state.active_tab_state = "Individual Profile"
 
-        # Horizontal rule simulation to enforce structural tracking bounds
         selected_tab_label = st.radio("Navigation View Menu Selection Control", tab_titles, label_visibility="collapsed", horizontal=True, key="master_app_structural_gate_radio")
         st.session_state.active_tab_state = selected_tab_label
 
         # ==========================================
-        # --- CONDITIONAL SUB-BLOCK BRANCHING ------
+        # --- TAB CLAUSE 1: INDIVIDUAL PROFILE -----
         # ==========================================
         if st.session_state.active_tab_state == "Individual Profile":
-            st.markdown("## Individual Profile View Metrics")
             df_t0 = df_master.copy()
             cmj_t0 = cmj_master.copy()
             ash_t0 = ash_master.copy()
@@ -338,8 +320,6 @@ if check_password():
             
             jc1, jc2 = st.columns([1.5, 3.5])
             p_cmj_hist = cmj_t0[(cmj_t0['Name'] == selected_athlete_prof) & (cmj_t0['Test Date'] <= curr_date_prof)].sort_values('Test Date')
-            cmj_col = 'Jump Height (Imp-Mom) [cm]'
-            rsi_col = 'RSI-modified [m/s]'
 
             with jc1:
                 baseline_cmj = p_cmj_hist[p_cmj_hist['Season'] == 'Summer'].head(1) if selected_season == 'Summer' else cmj_t0[(cmj_t0['Name'] == selected_athlete_prof) & (cmj_t0['Week'] == 4)]
@@ -452,10 +432,9 @@ if check_password():
                 st.plotly_chart(fig_ph, use_container_width=True, config=LOCKED_CONFIG, key="phase_analysis_t0")
 
         # ==========================================
-        # --- TAB 1: PRACTICE SCORES ---------------
+        # --- TAB CLAUSE 2: PRACTICE SCORES --------
         # ==========================================
         elif st.session_state.active_tab_state == "Practice Scores":
-            st.markdown("## Practice Scoring Matrix Breakdown")
             df_t1 = df_master.copy()
             target_date_str = "2026-04-04"
             tournament_label = "GT Spring Tournament 4-4-26"
@@ -513,10 +492,9 @@ if check_password():
                             with cols[j]: st.markdown(f'<div style="border:1px solid #E5E5E7; border-radius:15px; padding:15px; margin-bottom:20px; background-color:white;"><div style="display:flex; align-items:center; gap:10px;"><div style="flex:1.2; text-align:center;"><img src="{p_session_row["PhotoURL"]}" class="gallery-photo"><p style="font-weight:bold; font-size:15px; margin-top:8px; color:#333;">{name}</p></div><div style="flex:3;"><table class="scout-table"><thead><tr><th>Metric</th><th>Total</th><th>30d Max</th><th>Grade</th></tr></thead><tbody>{r_html}</tbody></table></div><div style="flex:1; text-align:center;"><div style="background-color:{get_flipped_gradient(sc_g)}; color:white; padding:10px; border-radius:12px; font-size:32px; font-weight:900;">{sc_g}</div></div></div></div>', unsafe_allow_html=True)
 
         # ==========================================
-        # --- TAB 2: PRACTICE HISTORY --------------
+        # --- TAB CLAUSE 3: PRACTICE HISTORY -------
         # ==========================================
         elif st.session_state.active_tab_state == "Practice History":
-            st.markdown("## Practice Tracking History Logs")
             df_t4 = df_master.copy()
             st.markdown('<div class="section-header">Season History & Team Weekly Review</div>', unsafe_allow_html=True)
             sub_tabs = st.tabs(["Individual Review", "Team Weekly Review"])
@@ -624,10 +602,9 @@ if check_password():
                                         st.plotly_chart(fig_p, use_container_width=True, key=f"team_card_{name}_{sel_week}_t4")
 
         # ==========================================
-        # --- TAB 3: MATCH V. PRACTICE -------------
+        # --- TAB CLAUSE 4: MATCH V. PRACTICE ------
         # ==========================================
         elif st.session_state.active_tab_state == "Match v. Practice":
-            st.markdown("## Match Demands vs Practice Thresholds")
             df_t5 = df_master.copy()
             match_t5 = match_master.copy()
             st.markdown('<div class="section-header">Season Preparation vs. Match Demands</div>', unsafe_allow_html=True)
@@ -673,10 +650,9 @@ if check_password():
                 st.markdown(overall_html + "</table>", unsafe_allow_html=True)
 
         # ==========================================
-        # --- TAB 4: MATCH SUMMARY -----------------
+        # --- TAB CLAUSE 5: MATCH SUMMARY ----------
         # ==========================================
         elif st.session_state.active_tab_state == "Match Summary":
-            st.markdown("## Match Breakdown Summary")
             match_t6 = match_master.copy()
             custom_colors = ['#4895DB', '#FF8200', '#515154', '#A52A2A', '#008080', '#6A1B9A', '#2E7D32']
     
@@ -729,10 +705,9 @@ if check_password():
                     st.markdown('</div>', unsafe_allow_html=True)
 
         # ==========================================
-        # --- TAB 5: POSITION ANALYSIS -------------
+        # --- TAB CLAUSE 6: POSITION ANALYSIS ------
         # ==========================================
         elif st.session_state.active_tab_state == "Position Analysis":
-            st.markdown("## Positional Output Clusters")
             df_t7 = df_master.copy()
             st.markdown('<div class="section-header">Positional Performance Trends</div>', unsafe_allow_html=True)
             pos_filter_an = st.selectbox("Select Position to Analyze", sorted([p for p in df_t7['Position'].unique() if p != "N/A"]), key="pos_an_filt_main_t7")
@@ -766,15 +741,25 @@ if check_password():
                                 fig_t.add_trace(go.Scatter(x=p_t['Week'], y=p_t[m], name="Athlete", line=dict(color='#4895DB', width=4), mode='lines+markers'))
                                 g_t = tr_df.groupby(['Week', 'Name'])[m].sum().reset_index().groupby('Week')[m].max().reset_index()
                                 fig_t.add_trace(go.Scatter(x=g_t['Week'], y=g_t[m], name="Pos. Max", line=dict(color='#FF8200', dash='dash', width=2), mode='lines'))
-                                fig_t.update_layout(title=dict(text=f"<b>Weekly Output Timeline: {m}</b>", font=dict(size=12), x=0.5), xaxis=dict(dtick=1, showgrid=False, title="Week"), yaxis=dict(showgrid=True, gridcolor='#F5F5F7', rangemode='tozero'), height=220, margin=dict(l=10, r=10, t=30, b=40), showlegend=True, legend=dict(orientation="h", yanchor="bottom", y=-0.6, x=0.5, xanchor="center"), template="simple_white")
+                                
+                                # --- RE-ARCHITECTED CHART SPACING FIXED HERE ---
+                                fig_t.update_layout(
+                                    title=dict(text=f"<b>Weekly Output Timeline: {m}</b>", font=dict(size=12), x=0.5), 
+                                    xaxis=dict(dtick=1, showgrid=False, title="Week"), 
+                                    yaxis=dict(showgrid=True, gridcolor='#F5F5F7', rangemode='tozero'), 
+                                    height=260, 
+                                    margin=dict(l=15, r=15, t=40, b=60), 
+                                    showlegend=True, 
+                                    legend=dict(orientation="h", y=-0.35, x=0.5, xanchor="center"), 
+                                    template="simple_white"
+                                )
                                 st.plotly_chart(fig_t, use_container_width=True, config=LOCKED_CONFIG, key=f"trend_{name}_{m}_t7")
                     st.write("<div style='height: 30px;'></div>", unsafe_allow_html=True)
 
         # ==========================================
-        # --- TAB 6: PHASE ANALYSIS ----------------
+        # --- TAB CLAUSE 7: PHASE ANALYSIS ---------
         # ==========================================
         elif st.session_state.active_tab_state == "Phase Analysis":
-            st.markdown("## Drill Segment Metrics Matrix")
             st.markdown('<div class="section-header">Work Index Matrix & Drill Utilization</div>', unsafe_allow_html=True)
             if phase_master is not None and not phase_master.empty:
                 working_matrix = phase_master.copy()
@@ -835,10 +820,9 @@ if check_password():
                 st.markdown(freq_html + "</table>", unsafe_allow_html=True)
 
         # ==========================================
-        # --- TAB 7: PRACTICE PLANNER --------------
+        # --- TAB CLAUSE 8: PRACTICE PLANNER -------
         # ==========================================
         elif st.session_state.active_tab_state == "Practice Planner":
-            st.markdown("## Interactive Load Scheduler Engine")
             st.markdown('<div class="section-header">Practice Phase Analysis & Planner</div>', unsafe_allow_html=True)
             if phase_master is not None and not phase_master.empty:
                 working_planner = phase_master.copy()
