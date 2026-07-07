@@ -82,7 +82,7 @@ def check_password():
         return True
 
 
-# --- 3. DATA PIPELINE (CACHED WITH HARD BOUNDARIES) ---
+# --- 3. DATA PIPELINE ---
 if check_password():
     if "is_printing" not in st.session_state:
         st.session_state.is_printing = False
@@ -206,12 +206,11 @@ if check_password():
     try:
         raw_df, raw_match_df, raw_cmj_df, raw_phase_df, thresh_df, raw_ash_df, raw_er_df = load_all_data()
 
-        # --- GLOBAL SEASON FILTER SIDEBAR ---
+        # --- GLOBAL SEASON SIDEBAR CONFIG ---
         st.sidebar.markdown("### Season")
         selected_season = st.sidebar.radio("Select Season", ["Spring", "Summer"], index=1, key="global_season_toggle")
         st.sidebar.info(f"Currently displaying: {selected_season} Season Performance Data.")
         
-        # Slicing master datasets safely
         df_master = raw_df[raw_df['Season'] == selected_season].copy()
         match_master = raw_match_df[raw_match_df['Season'] == selected_season].copy()
         cmj_master = raw_cmj_df[raw_cmj_df['Season'] == selected_season].copy()
@@ -229,20 +228,17 @@ if check_password():
         master_athlete_list = sorted(list(set(df_master['Name'].unique()) | set(cmj_master['Name'].unique()) | set(ash_master['Name'].unique()) | set(er_master['Name'].unique())))
         session_list = df_master[df_master['Session_Name'].notna()].sort_values('Date', ascending=False)['Session_Name'].unique().tolist()
 
-        # Branding Header Layout Context
         st.markdown('<div class="main-logo-container" style="text-align: center; margin-top: 10px; margin-bottom: 15px;"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Tennessee_Lady_Volunteers_logo.svg/1280px-Tennessee_Lady_Volunteers_logo.svg.png" width="120"><div style="color: #FF8200; font-size: 2rem; font-weight: 900; margin-top: 10px;">LADY VOLS VOLLEYBALL PERFORMANCE</div></div>', unsafe_allow_html=True)
 
-        # ==========================================
-        # --- 4. NAVIGATION CONTAINER CONTROL ---
-        # ==========================================
+        # --- 4. NAVIGATION CONTAINER CONTROL (EXPLICIT RE-RENDER ISOLATION) ---
         tabs = st.tabs(["Individual Profile", "Practice Scores", "Practice History", "Match v. Practice", "Match Summary", "Position Analysis", "Phase Analysis", "Practice Planner"])
 
         # ==========================================
         # --- TAB 0: INDIVIDUAL PROFILE ------------
         # ==========================================
         with tabs[0]:
-            # Explicitly force-clear any shared loop variable names
-            name = None; display_df = None; ad = None; p_data = None
+            # Structural Variable Reset to Prevent Multi-Tab Data Overflow
+            name = None; display_df = None; ad = None; p_data = None; side_cols = None; cols = None
             
             df_t0 = df_master.copy()
             cmj_t0 = cmj_master.copy()
@@ -299,7 +295,7 @@ if check_password():
             lb_prof = daily_sums_prof[(daily_sums_prof['Date'] >= pd.to_datetime(curr_date_prof) - timedelta(days=30)) & (daily_sums_prof['Date'] <= pd.to_datetime(curr_date_prof))]
 
             filtered_metrics_prof = [m for m in all_metrics if m not in ['High Jumps', 'Moderate Jumps', 'High Intensity Movement']]
-            r_html_prof = ""; t_grade_prof = 0; c_metrics_prof = 0
+            r_html_prof = ""; t_grade_prof = 0; c_metrics_prof = 1
 
             for k in filtered_metrics_prof:
                 val = p_row.get(k, 0.0)
@@ -441,7 +437,8 @@ if check_password():
         # --- TAB 1: PRACTICE SCORES ---------------
         # ==========================================
         with tabs[1]: 
-            name = None; display_df = None; ad = None; p_data = None
+            # Force purge variable scopes from other tabs
+            name = None; display_df = None; ad = None; p_data = None; side_cols = None; cols = None
             
             df_t1 = df_master.copy()
             target_date_str = "2026-04-04"
@@ -503,7 +500,7 @@ if check_password():
         # --- TAB 2: PRACTICE HISTORY --------------
         # ==========================================
         with tabs[2]: 
-            name = None; display_df = None; ad = None; p_data = None
+            name = None; display_df = None; ad = None; p_data = None; side_cols = None; cols = None
             
             df_t4 = df_master.copy()
             st.markdown('<div class="section-header">Season History & Team Weekly Review</div>', unsafe_allow_html=True)
@@ -615,7 +612,7 @@ if check_password():
         # --- TAB 3: MATCH V. PRACTICE -------------
         # ==========================================
         with tabs[3]: 
-            name = None; display_df = None; ad = None; p_data = None
+            name = None; display_df = None; ad = None; p_data = None; side_cols = None; cols = None
             
             df_t5 = df_master.copy()
             match_t5 = match_master.copy()
@@ -640,8 +637,8 @@ if check_password():
             def clean_gp_data(target_df):
                 if target_df.empty: return target_df
                 target_df = target_df.rename(columns={'Total Player Load': 'Player Load', 'PlayerLoad': 'Player Load'})
-                cols = ['Player Load', 'Explosive Efforts', 'Total Jumps', 'Jump Load', 'Duration']
-                for c in cols:
+                cols_to_clean = ['Player Load', 'Explosive Efforts', 'Total Jumps', 'Jump Load', 'Duration']
+                for c in cols_to_clean:
                     if c in target_df.columns: target_df[c] = pd.to_numeric(target_df[c], errors='coerce').fillna(0)
                 if 'Duration' in target_df.columns: target_df['Duration'] = target_df['Duration'].apply(lambda x: x if x > 0 else 1)
                 return target_df
@@ -665,7 +662,7 @@ if check_password():
         # --- TAB 4: MATCH SUMMARY -----------------
         # ==========================================
         with tabs[4]: 
-            name = None; display_df = None; ad = None; p_data = None
+            name = None; display_df = None; ad = None; p_data = None; side_cols = None; cols = None
             
             match_t6 = match_master.copy()
             custom_colors = ['#4895DB', '#FF8200', '#515154', '#A52A2A', '#008080', '#6A1B9A', '#2E7D32']
@@ -722,7 +719,7 @@ if check_password():
         # --- TAB 5: POSITION ANALYSIS -------------
         # ==========================================
         with tabs[5]: 
-            name = None; display_df = None; ad = None; p_data = None
+            name = None; display_df = None; ad = None; p_data = None; side_cols = None; cols = None
             
             df_t7 = df_master.copy()
             st.markdown('<div class="section-header">Positional Performance Trends</div>', unsafe_allow_html=True)
@@ -757,7 +754,7 @@ if check_password():
                                 fig_t.add_trace(go.Scatter(x=p_t['Week'], y=p_t[m], name="Athlete", line=dict(color='#4895DB', width=4), mode='lines+markers'))
                                 g_t = tr_df.groupby(['Week', 'Name'])[m].sum().reset_index().groupby('Week')[m].max().reset_index()
                                 fig_t.add_trace(go.Scatter(x=g_t['Week'], y=g_t[m], name="Pos. Max", line=dict(color='#FF8200', dash='dash', width=2), mode='lines'))
-                                fig_t.update_layout(title=dict(text=f"<b>Weekly Output Timeline: {m}</b>", font=dict(size=12), x=0.5), xaxis=dict(dtick=1, showgrid=False, title="Week"), yaxis=dict(showgrid=True, gridcolor='#F5F5F7', rangemode='tozero'), height=220, margin=dict(l=10, r=10, t=30, b=40), showlegend=True, legend=dict(orientation="h", y=-0.6, x=0.5, xanchor="center"), template="simple_white")
+                                fig_t.update_layout(title=dict(text=f"<b>Weekly Output Timeline: {m}</b>", font=dict(size=12), x=0.5), xaxis=dict(dtick=1, showgrid=False, title="Week"), yaxis=dict(showgrid=True, gridcolor='#F5F5F7', rangemode='tozero'), height=220, margin=dict(l=10, r=10, t=30, b=40), showlegend=True, legend=dict(orientation="h", yanchor="bottom", y=-0.6, x=0.5, xanchor="center"), template="simple_white")
                                 st.plotly_chart(fig_t, use_container_width=True, config=LOCKED_CONFIG, key=f"trend_{name}_{m}_t7")
                     st.write("<div style='height: 30px;'></div>", unsafe_allow_html=True)
 
@@ -765,7 +762,7 @@ if check_password():
         # --- TAB 6: PHASE ANALYSIS ----------------
         # ==========================================
         with tabs[6]: 
-            name = None; display_df = None; ad = None; p_data = None
+            name = None; display_df = None; ad = None; p_data = None; side_cols = None; cols = None
             
             st.markdown('<div class="section-header">Work Index Matrix & Drill Utilization</div>', unsafe_allow_html=True)
             if phase_master is not None and not phase_master.empty:
@@ -830,7 +827,7 @@ if check_password():
         # --- TAB 7: PRACTICE PLANNER --------------
         # ==========================================
         with tabs[7]: 
-            name = None; display_df = None; ad = None; p_data = None
+            name = None; display_df = None; ad = None; p_data = None; side_cols = None; cols = None
             
             st.markdown('<div class="section-header">Practice Phase Analysis & Planner</div>', unsafe_allow_html=True)
             if phase_master is not None and not phase_master.empty:
