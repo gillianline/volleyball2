@@ -30,7 +30,15 @@ st.markdown("""
     }
     .stApp { background-color: #FFFFFF; color: #1D1D1F; }
     hr { display: none !important; }
-    .block-container { padding-top: 2rem !important; }
+    .block-container { 
+    padding-top: 5rem !important; 
+    padding-bottom: 3rem !important; 
+    }
+
+    .stPlotlyChart {
+    margin-top: 20px !important;
+    margin-bottom: 20px !important;
+    }
     .viewerBadge_link__1S137, .main_heading_anchor__m6v0K, a.header-anchor { display: none !important; }
     header a { display: none !important; }
     .scout-table { width: 100%; border-collapse: collapse; text-align: center; table-layout: auto; }
@@ -749,7 +757,7 @@ if check_password():
                         st.markdown(f"""<div class="player-row-container" style="padding: 20px; border: 1px solid #E5E5E7; border-radius:15px; background:white; margin-bottom: 0px;"><div style="text-align:center; padding:15px; background:#f8f9fa; border-bottom:2px solid #FF8200; border-radius: 12px;"><div style="width:90px; height:90px; border-radius:50%; background-color: white; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 3px solid #FF8200; margin: 0 auto 10px auto;"><img src="{p_data["PhotoURL"].iloc[0]}" style="width:100%; height:100%; object-fit: contain;"></div><p style="margin:0; font-weight:900; color:#1D1D1F; font-size:18px;">{name}</p><p style="margin:0; font-size:12px; color:grey;">Weekly Max Volume</p></div><table class="scout-table" style="width:100%; margin-top:15px;"><thead><tr><th>Metric</th><th>Athlete Max</th><th>Pos. Max Total</th></tr></thead><tbody><tr><td style="font-weight:700;">Player Load</td><td>{p_avg_weekly_total['Player Load']:.0f}</td><td>{pos_avg_weekly_total['Player Load']:.0f}</td></tr><tr><td style="font-weight:700;">Est. Dist (y)</td><td>{p_avg_weekly_total['Estimated Distance (y)']:.0f}</td><td>{pos_avg_weekly_total['Estimated Distance (y)']:.0f}</td></tr><tr><td style="font-weight:700;">Explosive</td><td>{p_avg_weekly_total['Explosive Efforts']:.0f}</td><td>{pos_avg_weekly_total['Explosive Efforts']:.0f}</td></tr><tr><td style="font-weight:700;">Total Jumps</td><td>{p_avg_weekly_total['Total Jumps']:.0f}</td><td>{pos_avg_weekly_total['Total Jumps']:.0f}</td></tr></tbody></table></div>""", unsafe_allow_html=True)
 
                     with c_card2:
-                        st.write("<div style='height: 10px;'></div>", unsafe_allow_html=True)
+                        st.write("<div style='height: 25px;'></div>", unsafe_allow_html=True)
                         t_cols = st.columns(2) 
                         for i, m in enumerate(tr_metrics):
                             with t_cols[i % 2]:
