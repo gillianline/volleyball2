@@ -743,14 +743,37 @@ if check_password():
                                 fig_t.add_trace(go.Scatter(x=g_t['Week'], y=g_t[m], name="Pos. Max", line=dict(color='#FF8200', dash='dash', width=2), mode='lines'))
                                 
                                 # --- RE-ARCHITECTED CHART SPACING FIXED HERE ---
+                                # --- RE-ARCHITECTED CHART SPACING FIXED HERE ---
                                 fig_t.update_layout(
-                                    title=dict(text=f"<b>Weekly Output Timeline: {m}</b>", font=dict(size=12), x=0.5), 
-                                    xaxis=dict(dtick=1, showgrid=False, title="Week"), 
-                                    yaxis=dict(showgrid=True, gridcolor='#F5F5F7', rangemode='tozero'), 
-                                    height=260, 
-                                    margin=dict(l=15, r=15, t=40, b=60), 
+                                    # 1. Shorten the main title so it never wraps or cuts off
+                                    title=dict(
+                                        text=f"<b>Weekly Trend: {m.split(' (')[0]}</b>", 
+                                        font=dict(size=12), 
+                                        x=0.5,
+                                        y=0.95
+                                    ), 
+                                    xaxis=dict(
+                                        dtick=1, 
+                                        showgrid=False, 
+                                        title="Week"
+                                    ), 
+                                    # 2. Move the metric name here so it's clean and vertically readable
+                                    yaxis=dict(
+                                        showgrid=True, 
+                                        gridcolor='#F5F5F7', 
+                                        rangemode='tozero',
+                                        title=m
+                                    ), 
+                                    height=270, 
+                                    # 3. Increase top (t) and bottom (b) padding explicitly
+                                    margin=dict(l=20, r=20, t=50, b=65), 
                                     showlegend=True, 
-                                    legend=dict(orientation="h", y=-0.35, x=0.5, xanchor="center"), 
+                                    legend=dict(
+                                        orientation="h", 
+                                        y=-0.4, 
+                                        x=0.5, 
+                                        xanchor="center"
+                                    ), 
                                     template="simple_white"
                                 )
                                 st.plotly_chart(fig_t, use_container_width=True, config=LOCKED_CONFIG, key=f"trend_{name}_{m}_t7")
