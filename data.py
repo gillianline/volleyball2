@@ -232,13 +232,18 @@ if check_password():
         # Branding Header Layout Context
         st.markdown('<div class="main-logo-container" style="text-align: center; margin-top: 10px; margin-bottom: 15px;"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Tennessee_Lady_Volunteers_logo.svg/1280px-Tennessee_Lady_Volunteers_logo.svg.png" width="120"><div style="color: #FF8200; font-size: 2rem; font-weight: 900; margin-top: 10px;">LADY VOLS VOLLEYBALL PERFORMANCE</div></div>', unsafe_allow_html=True)
 
+        # ==========================================
         # --- 4. NAVIGATION CONTAINER CONTROL ---
+        # ==========================================
         tabs = st.tabs(["Individual Profile", "Practice Scores", "Practice History", "Match v. Practice", "Match Summary", "Position Analysis", "Phase Analysis", "Practice Planner"])
 
         # ==========================================
         # --- TAB 0: INDIVIDUAL PROFILE ------------
         # ==========================================
         with tabs[0]:
+            # Explicitly force-clear any shared loop variable names
+            name = None; display_df = None; ad = None; p_data = None
+            
             df_t0 = df_master.copy()
             cmj_t0 = cmj_master.copy()
             ash_t0 = ash_master.copy()
@@ -436,6 +441,8 @@ if check_password():
         # --- TAB 1: PRACTICE SCORES ---------------
         # ==========================================
         with tabs[1]: 
+            name = None; display_df = None; ad = None; p_data = None
+            
             df_t1 = df_master.copy()
             target_date_str = "2026-04-04"
             tournament_label = "GT Spring Tournament 4-4-26"
@@ -462,7 +469,7 @@ if check_password():
                 display_df = df_t1[df_t1['Session_Name'] == selected_session_gal].copy()
                 if not display_df.empty: curr_date_gal = display_df['Date'].iloc[0]
 
-            if not display_df.empty:
+            if display_df is not None and not display_df.empty:
                 if pos_f_gal != "All Positions": display_df = display_df[display_df['Position'] == pos_f_gal]
                 athlete_names = sorted(display_df['Name'].unique())
                 filtered_metrics_gal = [m for m in all_metrics if m not in ['High Jumps', 'Moderate Jumps', 'High Intensity Movement']]
@@ -496,6 +503,8 @@ if check_password():
         # --- TAB 2: PRACTICE HISTORY --------------
         # ==========================================
         with tabs[2]: 
+            name = None; display_df = None; ad = None; p_data = None
+            
             df_t4 = df_master.copy()
             st.markdown('<div class="section-header">Season History & Team Weekly Review</div>', unsafe_allow_html=True)
             sub_tabs = st.tabs(["Individual Review", "Team Weekly Review"])
@@ -606,6 +615,8 @@ if check_password():
         # --- TAB 3: MATCH V. PRACTICE -------------
         # ==========================================
         with tabs[3]: 
+            name = None; display_df = None; ad = None; p_data = None
+            
             df_t5 = df_master.copy()
             match_t5 = match_master.copy()
             st.markdown('<div class="section-header">Season Preparation vs. Match Demands</div>', unsafe_allow_html=True)
@@ -654,6 +665,8 @@ if check_password():
         # --- TAB 4: MATCH SUMMARY -----------------
         # ==========================================
         with tabs[4]: 
+            name = None; display_df = None; ad = None; p_data = None
+            
             match_t6 = match_master.copy()
             custom_colors = ['#4895DB', '#FF8200', '#515154', '#A52A2A', '#008080', '#6A1B9A', '#2E7D32']
     
@@ -709,6 +722,8 @@ if check_password():
         # --- TAB 5: POSITION ANALYSIS -------------
         # ==========================================
         with tabs[5]: 
+            name = None; display_df = None; ad = None; p_data = None
+            
             df_t7 = df_master.copy()
             st.markdown('<div class="section-header">Positional Performance Trends</div>', unsafe_allow_html=True)
             pos_filter_an = st.selectbox("Select Position to Analyze", sorted([p for p in df_t7['Position'].unique() if p != "N/A"]), key="pos_an_filt_main_t7")
@@ -750,6 +765,8 @@ if check_password():
         # --- TAB 6: PHASE ANALYSIS ----------------
         # ==========================================
         with tabs[6]: 
+            name = None; display_df = None; ad = None; p_data = None
+            
             st.markdown('<div class="section-header">Work Index Matrix & Drill Utilization</div>', unsafe_allow_html=True)
             if phase_master is not None and not phase_master.empty:
                 working_matrix = phase_master.copy()
@@ -813,6 +830,8 @@ if check_password():
         # --- TAB 7: PRACTICE PLANNER --------------
         # ==========================================
         with tabs[7]: 
+            name = None; display_df = None; ad = None; p_data = None
+            
             st.markdown('<div class="section-header">Practice Phase Analysis & Planner</div>', unsafe_allow_html=True)
             if phase_master is not None and not phase_master.empty:
                 working_planner = phase_master.copy()
