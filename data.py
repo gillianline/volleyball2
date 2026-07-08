@@ -262,8 +262,6 @@ if check_password():
             er_t0 = er_master.copy()
             phase_t0 = phase_master.copy()
 
-            target_date_str = "2026-04-04"
-            tournament_label = "GT Spring Tournament 4-4-26"
             
             clean_session_list_prof = []
             tourney_added_prof = False
@@ -452,8 +450,6 @@ if check_password():
         # ==========================================
         elif st.session_state.active_tab_state == "Practice Scores":
             df_t1 = df_master.copy()
-            target_date_str = "2026-04-04"
-            tournament_label = "GT Spring Tournament 4-4-26"
             
             clean_session_list = []
             tourney_added = False
