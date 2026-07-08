@@ -81,6 +81,25 @@ def check_password():
     else:
         return True
 
+def get_flipped_gradient(score):
+    """
+    Returns an HEX color string representing an athletic performance gradient.
+    Low scores get a muted red/grey warning tile, mid-scores lean into the team's 
+    signature secondary blue, and high scores scale into signature Tennessee Orange.
+    """
+    # Clamp score between 0 and 100 to prevent out-of-bounds indexing
+    score = max(0, min(100, int(round(score))))
+    
+    if score < 40:
+        # Warning Zone: Muted Crimson Red to slate grey
+        return "#DC3545" 
+    elif score < 70:
+        # Baseline/Moderate Workload Zone: Lady Vols Light Blue
+        return "#4895DB"
+    else:
+        # Peak Output Zone: Signature Tennessee Orange
+        return "#FF8200"
+
 
 # --- 3. HARD DECOUPLED DATA FETCHING ENGINE ---
 @st.cache_data(ttl=10)
