@@ -7,7 +7,7 @@ import math
 from datetime import timedelta
 
 # --- 1. CONFIG & SYSTEM GLOBAL CSS ---
-st.set_page_config(page_title="Lady Vols VB Performance", layout="wide")
+st.set_page_config(page_title="Volleyball Performance Dashboard", layout="wide")
 
 st.markdown("""
     <style>
@@ -34,13 +34,13 @@ st.markdown("""
     .viewerBadge_link__1S137, .main_heading_anchor__m6v0K, a.header-anchor { display: none !important; }
     header a { display: none !important; }
     .scout-table { width: 100%; border-collapse: collapse; text-align: center; table-layout: auto; }
-    .scout-table th { background-color: #4895DB; color: white; padding: 4px; border-bottom: 2px solid #FF8200; font-weight: 700; font-size: 11px; text-transform: uppercase; }
+    .scout-table th { background-color: #4895DB; color: white; padding: 4px; border-bottom: 2px solid #515154; font-weight: 700; font-size: 11px; text-transform: uppercase; }
     .scout-table td { padding: 4px; border-bottom: 1px solid #F5F5F7; font-size: 11px; color: #1D1D1F; }
     .bg-highlight-red { background-color: #ffcccc !important; font-weight: 900; }
     .arrow-red { color: #b30000 !important; font-weight: 900; margin-left: 4px; }
-    .player-photo-large { border-radius: 50%; width: 220px; height: 220px; object-fit: contain; border: 6px solid #FF8200; }
+    .player-photo-large { border-radius: 50%; width: 220px; height: 220px; object-fit: contain; border: 6px solid #4895DB; }
     .score-box { padding: 12px 20px; border-radius: 12px; font-size: 28px; font-weight: 800; min-width: 100px; color: #FFFFFF; line-height: 1.2; text-align: center;}
-    .info-box { background-color: #f8f9fa; border-left: 5px solid #FF8200; padding: 12px; margin-top: 10px; font-size: 12px; color: #1D1D1F; font-weight: 600; line-height: 1.4; }
+    .info-box { background-color: #f8f9fa; border-left: 5px solid #4895DB; padding: 12px; margin-top: 10px; font-size: 12px; color: #1D1D1F; font-weight: 600; line-height: 1.4; }
     
     .player-row-container { 
         break-inside: avoid !important; 
@@ -50,8 +50,8 @@ st.markdown("""
     }
     
     .player-divider { border: 0; height: 1px; background: #E5E5E7; margin-bottom: 15px; width: 100%; }
-    .gallery-photo { border-radius: 50%; width: 110px; height: 110px; object-fit: cover; border: 4px solid #FF8200; }
-    .section-header { font-size: 20px; font-weight: 800; color: #4895DB; border-bottom: 2px solid #FF8200; margin-top: 15px; margin-bottom: 10px; padding-bottom: 5px; text-transform: uppercase; }
+    .gallery-photo { border-radius: 50%; width: 110px; height: 110px; object-fit: cover; border: 4px solid #4895DB; }
+    .section-header { font-size: 20px; font-weight: 800; color: #4895DB; border-bottom: 2px solid #515154; margin-top: 15px; margin-bottom: 10px; padding-bottom: 5px; text-transform: uppercase; }
 
     @media print {
         .main-logo-container { display: block !important; margin-bottom: 0 !important; }
@@ -84,21 +84,17 @@ def check_password():
 def get_flipped_gradient(score):
     """
     Returns an HEX color string representing an athletic performance gradient.
-    Low scores get a muted red/grey warning tile, mid-scores lean into the team's 
-    signature secondary blue, and high scores scale into signature Tennessee Orange.
+    Low scores get a muted red/grey warning tile, mid-scores lean into light blue,
+    and high scores scale into deep athletic blue.
     """
-    # Clamp score between 0 and 100 to prevent out-of-bounds indexing
     score = max(0, min(100, int(round(score))))
     
     if score < 40:
-        # Warning Zone: Muted Crimson Red to slate grey
         return "#DC3545" 
     elif score < 70:
-        # Baseline/Moderate Workload Zone: Lady Vols Light Blue
         return "#4895DB"
     else:
-        # Peak Output Zone: Signature Tennessee Orange
-        return "#FF8200"
+        return "#1F517F"
 
 
 # --- 3. HARD DECOUPLED DATA FETCHING ENGINE ---
@@ -219,10 +215,10 @@ if check_password():
     try:
         raw_df, raw_match_df, raw_cmj_df, raw_phase_df, thresh_df, raw_ash_df, raw_er_df = load_all_data()
 
-        # --- SIDEBAR CONFIG ---
+        # --- SIDEBAR CONFIG (ISOLATED TO SPRING ONLY) ---
         st.sidebar.markdown("### Season")
-        selected_season = st.sidebar.radio("Select Season", ["Spring", "Summer"], index=1, key="global_season_toggle")
-        st.sidebar.info(f"Currently displaying: {selected_season} Season Performance Data.")
+        selected_season = "Spring"
+        st.sidebar.info("Displaying Spring Season Performance Data.")
         
         df_master = raw_df[raw_df['Season'] == selected_season].copy()
         match_master = raw_match_df[raw_match_df['Season'] == selected_season].copy()
@@ -244,7 +240,8 @@ if check_password():
         master_athlete_list = sorted(list(set(df_master['Name'].unique()) | set(cmj_master['Name'].unique()) | set(ash_master['Name'].unique()) | set(er_master['Name'].unique())))
         session_list = df_master[df_master['Session_Name'].notna()].sort_values('Date', ascending=False)['Session_Name'].unique().tolist()
 
-        st.markdown('<div class="main-logo-container" style="text-align: center; margin-top: 10px; margin-bottom: 15px;"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Tennessee_Lady_Volunteers_logo.svg/1280px-Tennessee_Lady_Volunteers_logo.svg.png" width="120"><div style="color: #FF8200; font-size: 2rem; font-weight: 900; margin-top: 10px;">LADY VOLS VOLLEYBALL PERFORMANCE</div></div>', unsafe_allow_html=True)
+        # --- CLEAN REMOVAL OF LOGO & GENERIC TITLE ---
+        st.markdown('<div class="main-logo-container" style="text-align: center; margin-top: 10px; margin-bottom: 25px;"><div style="color: #4895DB; font-size: 2.2rem; font-weight: 900; letter-spacing: -0.5px;">VOLLEYBALL PERFORMANCE</div></div>', unsafe_allow_html=True)
 
         # --- MANDATORY ISOLATION ARCHITECTURE: NATIVE STATE LINKING ---
         tab_titles = ["Individual Profile", "Practice Scores", "Practice History", "Match v. Practice", "Match Summary", "Position Analysis", "Phase Analysis", "Practice Planner"]
@@ -331,7 +328,7 @@ if check_password():
 
             c1, c2, c3 = st.columns([1.2, 2.5, 1.2])
             with c1: st.markdown(f'<div style="text-align:center;"><img src="{p_meta.get("PhotoURL", "https://www.w3schools.com/howto/img_avatar.png")}" class="player-photo-large"></div><h3 style="text-align:center;">{p_meta.get("Name", selected_athlete_prof)}</h3>', unsafe_allow_html=True)
-            with c2: st.markdown(f'<table class="scout-table"><thead><tr><th>Metric</th><th>Today Total</th><th>30d Max Day</th><th>Grade</th></tr></thead><tbody>{r_html_prof}</tbody></table>', unsafe_allow_html=True)
+            with c2: st.markdown(f'<div style="width:100%;"><table class="scout-table"><thead><tr><th>Metric</th><th>Today Total</th><th>30d Max Day</th><th>Grade</th></tr></thead><tbody>{r_html_prof}</tbody></table></div>', unsafe_allow_html=True)
             with c3: st.markdown(f'<div style="display:flex; justify-content:center;"><div class="score-box" style="background-color:{get_flipped_gradient(sc_prof)};">{sc_prof}</div></div><p style="text-align:center; font-weight:bold; color:grey; margin-top:10px;">SESSION SCORE</p>', unsafe_allow_html=True)
             
             st.markdown('<div class="section-header">Weekly Readiness Profile</div>', unsafe_allow_html=True)
@@ -341,7 +338,7 @@ if check_password():
             p_cmj_hist = cmj_t0[(cmj_t0['Name'] == selected_athlete_prof) & (cmj_t0['Test Date'] <= curr_date_prof)].sort_values('Test Date')
 
             with jc1:
-                baseline_cmj = p_cmj_hist[p_cmj_hist['Season'] == 'Summer'].head(1) if selected_season == 'Summer' else cmj_t0[(cmj_t0['Name'] == selected_athlete_prof) & (cmj_t0['Week'] == 4)]
+                baseline_cmj = cmj_t0[(cmj_t0['Name'] == selected_athlete_prof) & (cmj_t0['Week'] == 4)]
                 if not baseline_cmj.empty and not p_cmj_hist.empty:
                     base_h = baseline_cmj.iloc[-1][cmj_col]
                     base_rsi = baseline_cmj.iloc[-1][rsi_col]
@@ -362,7 +359,7 @@ if check_password():
             with jc2:
                 if not p_cmj_hist.empty:
                     fig = make_subplots(specs=[[{"secondary_y": True}]])
-                    fig.add_trace(go.Scatter(x=p_cmj_hist['Test Date'], y=p_cmj_hist[cmj_col], name="Jump Height", mode='lines+markers', line=dict(color='#FF8200', width=3)), secondary_y=False)
+                    fig.add_trace(go.Scatter(x=p_cmj_hist['Test Date'], y=p_cmj_hist[cmj_col], name="Jump Height", mode='lines+markers', line=dict(color='#1F517F', width=3)), secondary_y=False)
                     fig.add_trace(go.Scatter(x=p_cmj_hist['Test Date'], y=p_cmj_hist[rsi_col], name="RSI Modified", mode='lines+markers', line=dict(color='#4895DB', dash='dot', width=2)), secondary_y=True)
                     fig.update_layout(height=160, margin=dict(l=0, r=0, t=10, b=0), showlegend=True, legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0), template="simple_white")
                     st.plotly_chart(fig, use_container_width=True, config=LOCKED_CONFIG, key="cmj_top_chart_t0")
@@ -382,7 +379,7 @@ if check_password():
                     li = row_i.iloc[-1]['Peak Vertical Force [N] (L)'] if not row_i.empty else 0.0
                     ri = row_i.iloc[-1]['Peak Vertical Force [N] (R)'] if not row_i.empty else 0.0
                     asym_i = row_i.iloc[-1]['Peak Vertical Force [N] (Asym)(%)'] if not row_i.empty else 0.0
-                    baseline_ash = p_ash_all[(p_ash_all['Season'] == 'Summer') & (p_ash_all['Isometric Type'].str.contains('I', case=False, na=False))].head(1) if selected_season == 'Summer' else p_ash_all[p_ash_all['Isometric Type'].str.contains('I', case=False, na=False)].head(1)
+                    baseline_ash = p_ash_all[p_ash_all['Isometric Type'].str.contains('I', case=False, na=False)].head(1)
                     base_li = baseline_ash.iloc[-1]['Peak Vertical Force [N] (L)'] if not baseline_ash.empty else 0.0
                     base_ri = baseline_ash.iloc[-1]['Peak Vertical Force [N] (R)'] if not baseline_ash.empty else 0.0
                     pct_l = ((li - base_li) / base_li * 100) if base_li > 0 else 0
@@ -399,7 +396,7 @@ if check_password():
                     if not p_ash_i_only.empty:
                         fig_ash = go.Figure()
                         fig_ash.add_trace(go.Scatter(x=p_ash_i_only['Test Date'], y=p_ash_i_only['Peak Vertical Force [N] (L)'], name="Left Peak Force", mode='lines+markers', line=dict(color='#4895DB', width=2.5)))
-                        fig_ash.add_trace(go.Scatter(x=p_ash_i_only['Test Date'], y=p_ash_i_only['Peak Vertical Force [N] (R)'], name="Right Peak Force", mode='lines+markers', line=dict(color='#FF8200', width=2.5, dash='dash')))
+                        fig_ash.add_trace(go.Scatter(x=p_ash_i_only['Test Date'], y=p_ash_i_only['Peak Vertical Force [N] (R)'], name="Right Peak Force", mode='lines+markers', line=dict(color='#1F517F', width=2.5, dash='dash')))
                         fig_ash.update_layout(height=160, margin=dict(l=0, r=0, t=10, b=0), showlegend=True, legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0), template="simple_white")
                         st.plotly_chart(fig_ash, use_container_width=True, config=LOCKED_CONFIG, key="ash_profile_chart_t0")
             else:
@@ -412,7 +409,7 @@ if check_password():
             if not p_er_hist.empty:
                 ec1, ec2 = st.columns([1.5, 3.5])
                 with ec1:
-                    baseline_er = p_er_hist[p_er_hist['Season'] == 'Summer'].head(1) if selected_season == 'Summer' else p_er_hist.head(1)
+                    baseline_er = p_er_hist.head(1)
                     if not baseline_er.empty:
                         base_l_rom = baseline_er.iloc[-1]['L Max ROM (°)']
                         base_r_rom = baseline_er.iloc[-1]['R Max ROM (°)']
@@ -432,7 +429,7 @@ if check_password():
                 with ec2:
                     fig_er = go.Figure()
                     fig_er.add_trace(go.Scatter(x=p_er_hist['Test Date'], y=p_er_hist['L Max ROM (°)'], name="Left Max ROM", mode='lines+markers', line=dict(color='#4895DB', width=2.5)))
-                    fig_er.add_trace(go.Scatter(x=p_er_hist['Test Date'], y=p_er_hist['R Max ROM (°)'], name="Right Max ROM", mode='lines+markers', line=dict(color='#FF8200', width=2.5, dash='dash')))
+                    fig_er.add_trace(go.Scatter(x=p_er_hist['Test Date'], y=p_er_hist['R Max ROM (°)'], name="Right Max ROM", mode='lines+markers', line=dict(color='#1F517F', width=2.5, dash='dash')))
                     fig_er.update_layout(height=160, margin=dict(l=0, r=0, t=10, b=0), showlegend=True, legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0), template="simple_white")
                     st.plotly_chart(fig_er, use_container_width=True, config=LOCKED_CONFIG, key="er_profile_chart_t0")
             else:
@@ -444,7 +441,7 @@ if check_password():
                 st.markdown('<div class="section-header">Practice Phase Analysis</div>', unsafe_allow_html=True)
                 fig_ph = make_subplots(specs=[[{"secondary_y": True}]])
                 fig_ph.add_trace(go.Bar(x=p_ph['Phase'], y=p_ph['Player Load'], name="Player Load", marker_color='#4895DB'), secondary_y=False)
-                fig_ph.add_trace(go.Scatter(x=p_ph['Phase'], y=p_ph['Total Jumps'], name="Total Jumps", line=dict(color='#FF8200', width=4), mode='lines+markers'), secondary_y=True)
+                fig_ph.add_trace(go.Scatter(x=p_ph['Phase'], y=p_ph['Total Jumps'], name="Total Jumps", line=dict(color='#1F517F', width=4), mode='lines+markers'), secondary_y=True)
                 fig_ph.update_layout(height=350, showlegend=True, template="simple_white", legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1), margin=dict(l=0, r=0, t=30, b=0))
                 fig_ph.update_yaxes(title_text="Player Load", secondary_y=False)
                 fig_ph.update_yaxes(title_text="Total Jumps", secondary_y=True)
@@ -543,7 +540,7 @@ if check_password():
                     prac_df = master_df_history[master_df_history['Type'] == 'Practice']
                     if not prac_df.empty: fig_master.add_trace(go.Scatter(x=prac_df['Display'], y=prac_df['Score'], mode='markers+text', text=prac_df['Score'], textposition="top center", name="Practice", marker=dict(size=8, color='#4895DB', line=dict(width=1, color='white'))))
                     match_df_line = master_df_history[master_df_history['Type'] == 'Match']
-                    if not match_df_line.empty: fig_master.add_trace(go.Scatter(x=match_df_line['Display'], y=match_df_line['Score'], mode='markers+text', text=[f"<b>{s}</b>" for s in match_df_line['Score']], textposition="top center", name="Match Day", marker=dict(size=15, color='#FF8200', line=dict(width=3, color='#31333F')), textfont=dict(color='#31333F', size=13, weight='bold')))
+                    if not match_df_line.empty: fig_master.add_trace(go.Scatter(x=match_df_line['Display'], y=match_df_line['Score'], mode='markers+text', text=[f"<b>{s}</b>" for s in match_df_line['Score']], textposition="top center", name="Match Day", marker=dict(size=15, color='#1F517F', line=dict(width=3, color='#31333F')), textfont=dict(color='#31333F', size=13, weight='bold')))
                     for i in range(1, len(master_df_history)):
                         if master_df_history.iloc[i]['Week'] != master_df_history.iloc[i-1]['Week']:
                             fig_master.add_vline(x=i-0.5, line_dash="dash", line_color="#515154", opacity=0.3)
@@ -584,41 +581,41 @@ if check_password():
                         
                         fig_cmj = make_subplots(specs=[[{"secondary_y": True}]])
                         fig_cmj.add_trace(go.Scatter(x=ath_cmj_data['Test Date'], y=ath_cmj_data[cmj_col], name="Jump Height (cm)", mode='lines+markers', line=dict(color='#4895DB', width=3)), secondary_y=False)
-                        fig_cmj.add_trace(go.Scatter(x=ath_cmj_data['Test Date'], y=ath_cmj_data[rsi_col], name="RSI-mod", mode='lines+markers', line=dict(color='#FF8200', width=2, dash='dot')), secondary_y=True)
+                        fig_cmj.add_trace(go.Scatter(x=ath_cmj_data['Test Date'], y=ath_cmj_data[rsi_col], name="RSI-mod", mode='lines+markers', line=dict(color='#1F517F', width=2, dash='dot')), secondary_y=True)
                         fig_cmj.add_hline(y=base_row[cmj_col], line_dash="dash", line_color="red")
                         fig_cmj.update_layout(height=400, template="simple_white", margin=dict(l=10, r=10, t=30, b=10), legend=dict(orientation="h", yanchor="bottom", y=-0.3, x=0.5, xanchor="center"), xaxis=dict(title="Date", tickformat="%m/%d"))
                         st.plotly_chart(fig_cmj, use_container_width=True, key=f"integrated_cmj_final_{sel_ath_hist}_t4")
 
-                with sub_tabs[1]:
-                    sel_week = st.selectbox("Select Review Week", sorted(df_t4['Week'].unique(), reverse=True), key="team_week_sel_t4")
-                    week_df = df_t4[df_t4['Week'] == sel_week].copy()
-                    ath_names = sorted(week_df['Name'].unique())
-                    
-                    for i in range(0, len(ath_names), 2):
-                        cols = st.columns(2)
-                        for j in range(2):
-                            if i + j < len(ath_names):
-                                name = ath_names[i+j]
-                                p_all = df_t4[df_t4['Name'] == name].copy()
-                                p_daily = p_all.groupby(['Date', 'Week'])[metrics_to_score].sum().reset_index().sort_values('Date')
-                                w_daily = p_daily[p_daily['Week'].astype(str) == str(sel_week)]
+            with sub_tabs[1]:
+                sel_week = st.selectbox("Select Review Week", sorted(df_t4['Week'].unique(), reverse=True), key="team_week_sel_t4")
+                week_df = df_t4[df_t4['Week'] == sel_week].copy()
+                ath_names = sorted(week_df['Name'].unique())
+                
+                for i in range(0, len(ath_names), 2):
+                    cols = st.columns(2)
+                    for j in range(2):
+                        if i + j < len(ath_names):
+                            name = ath_names[i+j]
+                            p_all = df_t4[df_t4['Name'] == name].copy()
+                            p_daily = p_all.groupby(['Date', 'Week'])[metrics_to_score].sum().reset_index().sort_values('Date')
+                            w_daily = p_daily[p_daily['Week'].astype(str) == str(sel_week)]
+                            
+                            if not w_daily.empty:
+                                card_scores = []
+                                for _, r in w_daily.iterrows():
+                                    r_grades = []
+                                    lb = p_daily[(p_daily['Date'] >= r['Date'] - timedelta(days=30)) & (p_daily['Date'] <= r['Date'])]
+                                    for m in metrics_to_score:
+                                        mx = lb[m].max() if not lb.empty else 1.0
+                                        r_grades.append(math.ceil((r[m] / mx) * 100) if mx > 0 else 0)
+                                    card_scores.append({'Display': r['Date'].strftime('%m/%d'), 'Score': round(sum(r_grades)/len(r_grades), 0)})
                                 
-                                if not w_daily.empty:
-                                    card_scores = []
-                                    for _, r in w_daily.iterrows():
-                                        r_grades = []
-                                        lb = p_daily[(p_daily['Date'] >= r['Date'] - timedelta(days=30)) & (p_daily['Date'] <= r['Date'])]
-                                        for m in metrics_to_score:
-                                            mx = lb[m].max() if not lb.empty else 1.0
-                                            r_grades.append(math.ceil((r[m] / mx) * 100) if mx > 0 else 0)
-                                        card_scores.append({'Display': r['Date'].strftime('%m/%d'), 'Score': round(sum(r_grades)/len(r_grades), 0)})
-                                    
-                                    with cols[j]:
-                                        st.markdown(f'<div style="border:1px solid #E5E5E7; border-top:4px solid #FF8200; border-radius:10px 10px 0 0; padding:10px; background:white;"><div style="display:flex; align-items:center; gap:12px;"><div style="width:60px; height:60px; border-radius:50%; background-color:white; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 2px solid white; box-shadow: 0 1px 3px rgba(0,0,0,0.1);"><img src="{p_all.iloc[0]["PhotoURL"]}" style="width:100%; height:100%; object-fit:contain;"></div><p style="margin:0; font-weight:900; font-size:16px; color:#31333F;">{name}</p></div></div>', unsafe_allow_html=True)
-                                        fig_p = px.line(pd.DataFrame(card_scores), x='Display', y='Score', markers=True, text='Score', range_y=[0, 140])
-                                        fig_p.update_traces(textposition="top center", line=dict(color='#FF8200', width=3), marker=dict(size=8, color='#4895DB', line=dict(width=1, color='white')))
-                                        fig_p.update_layout(height=200, margin=dict(l=15, r=15, t=30, b=10), template="simple_white", xaxis=dict(type='category', title=None), yaxis=dict(visible=False))
-                                        st.plotly_chart(fig_p, use_container_width=True, key=f"team_card_{name}_{sel_week}_t4")
+                                with cols[j]:
+                                    st.markdown(f'<div style="border:1px solid #E5E5E7; border-top:4px solid #1F517F; border-radius:10px 10px 0 0; padding:10px; background:white;"><div style="display:flex; align-items:center; gap:12px;"><div style="width:60px; height:60px; border-radius:50%; background-color:white; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 2px solid white; box-shadow: 0 1px 3px rgba(0,0,0,0.1);"><img src="{p_all.iloc[0]["PhotoURL"]}" style="width:100%; height:100%; object-fit:contain;"></div><p style="margin:0; font-weight:900; font-size:16px; color:#31333F;">{name}</p></div></div>', unsafe_allow_html=True)
+                                    fig_p = px.line(pd.DataFrame(card_scores), x='Display', y='Score', markers=True, text='Score', range_y=[0, 140])
+                                    fig_p.update_traces(textposition="top center", line=dict(color='#1F517F', width=3), marker=dict(size=8, color='#4895DB', line=dict(width=1, color='white')))
+                                    fig_p.update_layout(height=200, margin=dict(l=15, r=15, t=30, b=10), template="simple_white", xaxis=dict(type='category', title=None), yaxis=dict(visible=False))
+                                    st.plotly_chart(fig_p, use_container_width=True, key=f"team_card_{name}_{sel_week}_t4")
 
         # ==========================================
         # --- TAB CLAUSE 4: MATCH V. PRACTICE ------
@@ -673,7 +670,7 @@ if check_password():
         # ==========================================
         elif st.session_state.active_tab_state == "Match Summary":
             match_t6 = match_master.copy()
-            custom_colors = ['#4895DB', '#FF8200', '#515154', '#A52A2A', '#008080', '#6A1B9A', '#2E7D32']
+            custom_colors = ['#4895DB', '#1F517F', '#515154', '#A52A2A', '#008080', '#6A1B9A', '#2E7D32']
     
             if st.session_state.is_printing:
                 if st.button("Back to Editor", key="back_editor_btn_t6"):
@@ -708,7 +705,7 @@ if check_password():
                     st.markdown(f'<div class="player-row-container"><div class="player-divider"></div>', unsafe_allow_html=True)
                     side_cols = st.columns([1.5, 2])
                     with side_cols[0]:
-                        card_start = f"""<div style="display:flex; align-items:center; gap:12px; padding:10px; background:#f8f9fa; border-bottom:2px solid #FF8200;"><img src="{correct_photo}" class="gallery-photo" style="width:65px; height:65px;"><div><p style="margin:0; font-weight:900; color:#1D1D1F; font-size:18px;">{name}</p><p style="margin:0; color:#4895DB; font-weight:700; font-size:16px;">{ad['Position'].iloc[0]}</p></div></div><div style="padding:5px;"><table class="scout-table" style="margin-bottom:0;"><thead><tr><th>Match</th><th>Jumps</th><th>Load</th><th>Efforts</th></tr></thead><tbody>"""
+                        card_start = f"""<div style="display:flex; align-items:center; gap:12px; padding:10px; background:#f8f9fa; border-bottom:2px solid #515154;"><img src="{correct_photo}" class="gallery-photo" style="width:65px; height:65px;"><div><p style="margin:0; font-weight:900; color:#1D1D1F; font-size:18px;">{name}</p><p style="margin:0; color:#4895DB; font-weight:700; font-size:16px;">{ad['Position'].iloc[0]}</p></div></div><div style="padding:5px;"><table class="scout-table" style="margin-bottom:0;"><thead><tr><th>Match</th><th>Jumps</th><th>Load</th><th>Efforts</th></tr></thead><tbody>"""
                         for _, r in ad.iterrows():
                             card_start += f"<tr><td style='font-weight:700; font-size:11px;'>{r['Session_Name']}</td><td>{int(r['Total Jumps'])}</td><td>{r['Player Load']:.0f}</td><td>{r['Explosive Efforts']:.0f}</td></tr>"
                         card_start += f"<tr style='background:#4895DB; color:white; font-weight:900;'><td>TOTAL</td><td>{int(ad['Total Jumps'].sum())}</td><td>{ad['Player Load'].sum():.0f}</td><td>{ad['Explosive Efforts'].sum():.0f}</td></tr></tbody></table></div>"
@@ -748,7 +745,7 @@ if check_password():
 
                     c_card1, c_card2 = st.columns([1.5, 3], gap="large")
                     with c_card1:
-                        st.markdown(f"""<div class="player-row-container" style="padding: 20px; border: 1px solid #E5E5E7; border-radius:15px; background:white; margin-bottom: 0px;"><div style="text-align:center; padding:15px; background:#f8f9fa; border-bottom:2px solid #FF8200; border-radius: 12px;"><div style="width:90px; height:90px; border-radius:50%; background-color: white; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 3px solid #FF8200; margin: 0 auto 10px auto;"><img src="{p_data["PhotoURL"].iloc[0]}" style="width:100%; height:100%; object-fit: contain;"></div><p style="margin:0; font-weight:900; color:#1D1D1F; font-size:18px;">{name}</p><p style="margin:0; font-size:12px; color:grey;">Weekly Max Volume</p></div><table class="scout-table" style="width:100%; margin-top:15px;"><thead><tr><th>Metric</th><th>Athlete Max</th><th>Pos. Max Total</th></tr></thead><tbody><tr><td style="font-weight:700;">Player Load</td><td>{p_avg_weekly_total['Player Load']:.0f}</td><td>{pos_avg_weekly_total['Player Load']:.0f}</td></tr><tr><td style="font-weight:700;">Est. Dist (y)</td><td>{p_avg_weekly_total['Estimated Distance (y)']:.0f}</td><td>{pos_avg_weekly_total['Estimated Distance (y)']:.0f}</td></tr><tr><td style="font-weight:700;">Explosive</td><td>{p_avg_weekly_total['Explosive Efforts']:.0f}</td><td>{pos_avg_weekly_total['Explosive Efforts']:.0f}</td></tr><tr><td style="font-weight:700;">Total Jumps</td><td>{p_avg_weekly_total['Total Jumps']:.0f}</td><td>{pos_avg_weekly_total['Total Jumps']:.0f}</td></tr></tbody></table></div>""", unsafe_allow_html=True)
+                        st.markdown(f"""<div class="player-row-container" style="padding: 20px; border: 1px solid #E5E5E7; border-radius:15px; background:white; margin-bottom: 0px;"><div style="text-align:center; padding:15px; background:#f8f9fa; border-bottom:2px solid #515154; border-radius: 12px;"><div style="width:90px; height:90px; border-radius:50%; background-color: white; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 3px solid #4895DB; margin: 0 auto 10px auto;"><img src="{p_data["PhotoURL"].iloc[0]}" style="width:100%; height:100%; object-fit: contain;"></div><p style="margin:0; font-weight:900; color:#1D1D1F; font-size:18px;">{name}</p><p style="margin:0; font-size:12px; color:grey;">Weekly Max Volume</p></div><table class="scout-table" style="width:100%; margin-top:15px;"><thead><tr><th>Metric</th><th>Athlete Max</th><th>Pos. Max Total</th></tr></thead><tbody><tr><td style="font-weight:700;">Player Load</td><td>{p_avg_weekly_total['Player Load']:.0f}</td><td>{pos_avg_weekly_total['Player Load']:.0f}</td></tr><tr><td style="font-weight:700;">Est. Dist (y)</td><td>{p_avg_weekly_total['Estimated Distance (y)']:.0f}</td><td>{pos_avg_weekly_total['Estimated Distance (y)']:.0f}</td></tr><tr><td style="font-weight:700;">Explosive</td><td>{p_avg_weekly_total['Explosive Efforts']:.0f}</td><td>{pos_avg_weekly_total['Explosive Efforts']:.0f}</td></tr><tr><td style="font-weight:700;">Total Jumps</td><td>{p_avg_weekly_total['Total Jumps']:.0f}</td><td>{pos_avg_weekly_total['Total Jumps']:.0f}</td></tr></tbody></table></div>""", unsafe_allow_html=True)
 
                     with c_card2:
                         st.write("<div style='height: 25px;'></div>", unsafe_allow_html=True)
@@ -759,12 +756,9 @@ if check_password():
                                 p_t = p_data.groupby('Week')[m].sum().reset_index()
                                 fig_t.add_trace(go.Scatter(x=p_t['Week'], y=p_t[m], name="Athlete", line=dict(color='#4895DB', width=4), mode='lines+markers'))
                                 g_t = tr_df.groupby(['Week', 'Name'])[m].sum().reset_index().groupby('Week')[m].max().reset_index()
-                                fig_t.add_trace(go.Scatter(x=g_t['Week'], y=g_t[m], name="Pos. Max", line=dict(color='#FF8200', dash='dash', width=2), mode='lines'))
+                                fig_t.add_trace(go.Scatter(x=g_t['Week'], y=g_t[m], name="Pos. Max", line=dict(color='#1F517F', dash='dash', width=2), mode='lines'))
                                 
-                                # --- RE-ARCHITECTED CHART SPACING FIXED HERE ---
-                                # --- RE-ARCHITECTED CHART SPACING FIXED HERE ---
                                 fig_t.update_layout(
-                                    # 1. Shorten the main title so it never wraps or cuts off
                                     title=dict(
                                         text=f"<b>Weekly Trend: {m.split(' (')[0]}</b>", 
                                         font=dict(size=12), 
@@ -776,7 +770,6 @@ if check_password():
                                         showgrid=False, 
                                         title="Week"
                                     ), 
-                                    # 2. Move the metric name here so it's clean and vertically readable
                                     yaxis=dict(
                                         showgrid=True, 
                                         gridcolor='#F5F5F7', 
@@ -784,7 +777,6 @@ if check_password():
                                         title=m
                                     ), 
                                     height=270, 
-                                    # 3. Increase top (t) and bottom (b) padding explicitly
                                     margin=dict(l=20, r=20, t=50, b=65), 
                                     showlegend=True, 
                                     legend=dict(
@@ -931,7 +923,7 @@ if check_password():
                         st.markdown("#### Practice Intensity Flow (Rate per Minute)")
                         g_build = planner_target_df.groupby('Phase')[[f'{m}_Rate' for m in plan_metrics]].mean().reset_index().set_index('Phase').loc[selected_build].reset_index()
                         fig_flow = make_subplots(specs=[[{"secondary_y": True}]])
-                        colors = {'Player Load': '#515154', 'Total Jumps': '#FF8200', 'Explosive Efforts': '#A52A2A', 'Estimated Distance (y)': '#4895DB'}
+                        colors = {'Player Load': '#515154', 'Total Jumps': '#1F517F', 'Explosive Efforts': '#A52A2A', 'Estimated Distance (y)': '#4895DB'}
                         for m in plan_metrics:
                             is_distance = (m == 'Estimated Distance (y)')
                             fig_flow.add_trace(go.Scatter(x=g_build['Phase'], y=g_build[f'{m}_Rate'], name=f"{m} (Right Axis)" if is_distance else m, mode='lines+markers', line=dict(color={m: colors[m] for m in plan_metrics}[m], width=3, shape='spline'), marker=dict(size=8)), secondary_y=is_distance)
